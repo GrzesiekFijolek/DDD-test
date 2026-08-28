@@ -1,3 +1,25 @@
-﻿// See https://aka.ms/new-console-template for more information
+using Application;
+using Domain;
+using Infrastructure;
 
-Console.WriteLine("Hello, World!");
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+
+builder.Services.AddDomain()
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
+
+
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+app.Run();
