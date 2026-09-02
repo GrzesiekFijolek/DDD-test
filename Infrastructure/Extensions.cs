@@ -1,4 +1,6 @@
 ﻿using Infrastructure.Database;
+using Infrastructure.Exceptions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +17,17 @@ public static class Extensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddSingleton<ExceptionMiddleware>();
+        
         services.AddPostgres();
         return services;
+    }
+
+    public static WebApplication UseInfrastructure(this WebApplication application)
+    {
+        application.UseMiddleware<ExceptionMiddleware>();
+
+        return application;
     }
 
 
