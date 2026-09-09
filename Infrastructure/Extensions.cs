@@ -26,8 +26,12 @@ public static class Extensions
             .ValidateOnStart();
 
         services.AddSingleton<ExceptionMiddleware>();
+        services.AddScoped<IUnitOfWork, AppDatabaseUnitOfWork>();
         
         services.AddPostgres();
+
+        services.TryDecorate(typeof(ICommandHandler<>), typeof(UnitOfWorkCommandHandlerDecorator<>));
+        services.TryDecorate(typeof(ICommandHandler<,>), typeof(UnitOfWorkCommandHandlerDecorator<,>));
         return services;
     }
 
