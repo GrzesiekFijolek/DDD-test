@@ -12,7 +12,7 @@ builder.Services.AddDomain()
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
-
+builder.UseSerilogLogging();
 
 var app = builder.Build();
 

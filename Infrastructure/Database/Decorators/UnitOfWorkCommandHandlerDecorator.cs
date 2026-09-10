@@ -1,6 +1,6 @@
 using Application.Common.CQRS;
 
-namespace Infrastructure.Database;
+namespace Infrastructure.Database.Decorators;
 
 internal sealed class UnitOfWorkCommandHandlerDecorator<TCommand> : ICommandHandler<TCommand> where TCommand: class, ICommand
 {

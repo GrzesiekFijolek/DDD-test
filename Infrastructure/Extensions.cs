@@ -1,16 +1,32 @@
 ﻿using Application.Common.CQRS;
 using Infrastructure.Database;
+using Infrastructure.Database.Decorators;
 using Infrastructure.Exceptions;
+using Infrastructure.Logging.Decorators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Extensions;
 
 namespace Infrastructure;
 
 public static class Extensions
 {
+    public static WebApplicationBuilder UseSerilogLogging(this WebApplicationBuilder builder)
+    {
+        builder.Host.UseSerilog((context, configuration) =>
+        {
+            configuration
+                .WriteTo.Console();
+                // .WriteTo.Seq("http://localhost:5341");
+        });
+
+        return builder;
+    }
+
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var infrastructureAssembly = typeof(AppDbContext).Assembly;
@@ -32,6 +48,9 @@ public static class Extensions
 
         services.TryDecorate(typeof(ICommandHandler<>), typeof(UnitOfWorkCommandHandlerDecorator<>));
         services.TryDecorate(typeof(ICommandHandler<,>), typeof(UnitOfWorkCommandHandlerDecorator<,>));
+
+        services.TryDecorate(typeof(ICommandHandler<>), typeof(LoggingComandHandlerDecorator<>));
+        services.TryDecorate(typeof(ICommandHandler<,>), typeof(LoggingComandHandlerDecorator<,>));
         return services;
     }
 
