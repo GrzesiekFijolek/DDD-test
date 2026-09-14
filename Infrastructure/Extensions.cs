@@ -51,6 +51,7 @@ public static class Extensions
 
     public static WebApplication UseInfrastructure(this WebApplication application)
     {
+        application.UseDatabase();
         application.UseMiddleware<ExceptionMiddleware>();
         application.UseAuthentication();
 

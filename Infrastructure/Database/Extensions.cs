@@ -1,5 +1,6 @@
 using Application.Common.CQRS;
 using Infrastructure.Database.Decorators;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,4 +32,15 @@ internal static class Extensions
 
         return services;
     }
+    
+    public static WebApplication UseDatabase(this WebApplication app)                                                                       
+    {                                                                                                                                       
+        using var scope = app.Services.CreateScope();                                                                                       
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();                                                             
+                                                                                                                                          
+        if (context.Database.IsRelational())                                                                                                
+            context.Database.Migrate();                                                                                                     
+                                                                                                                                          
+        return app;                                                                                                                         
+    }    
 }
