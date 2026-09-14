@@ -36,6 +36,9 @@ internal static class Extensions
 
         services.AddSingleton<IAuthenticator, JwtAuthenticator>();
 
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
+
         return services;
     }
 }

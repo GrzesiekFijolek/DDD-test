@@ -1,10 +1,16 @@
+using Domain.Common.Audit;
+
 namespace Domain.Users.Entities;
 
-public class UserEntity
+public sealed class UserEntity : IModificationAuditableEntity, ISoftDeleteAuditableEntity
 {
     public long Id { get; set; }
 
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
-    public string UserName { get; set; }
+    public required string UserName { get; set; }
+
+    public ModificationAudit? ModificationInfo { get; set; }
+
+    public DeletionAudit? DeletionInfo { get; set; }
 }
