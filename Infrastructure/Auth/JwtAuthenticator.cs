@@ -28,7 +28,7 @@ internal sealed class JwtAuthenticator : IAuthenticator
             SecurityAlgorithms.HmacSha256);
     }
     
-    public TokenResponse CreateToken(long userId, string userName, string role)
+    public TokenResponse CreateToken(long userId, string userName, string type)
     {
         var now = _clock.Current();
 
@@ -38,7 +38,7 @@ internal sealed class JwtAuthenticator : IAuthenticator
         {
             new (JwtRegisteredClaimNames.Sub, userId.ToString()),
             new (JwtRegisteredClaimNames.UniqueName, userName),
-            new (ClaimTypes.Role, userId.ToString(), role)
+            new (ClaimTypes.Role, type)
         };
 
         var jwt = new JwtSecurityToken(_issuer, _audience, claims, now, expires, _signingCredentials);

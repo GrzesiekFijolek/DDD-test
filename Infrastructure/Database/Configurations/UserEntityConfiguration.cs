@@ -13,6 +13,11 @@ internal sealed class UserEntityConfiguration : IEntityTypeConfiguration<UserEnt
         builder.Property(u => u.Email).IsRequired();
         builder.Property(u => u.UserName).IsRequired();
 
+        builder
+            .HasDiscriminator<string>("Type")
+            .HasValue<AdminEntity>("admin")
+            .HasValue<RegularUserEntity>("regular");
+
         builder.OwnsOne(u => u.ModificationInfo, o =>
         {
             o.Property(a => a.ModifiedAt).IsRequired();

@@ -2,7 +2,7 @@ using Domain.Common.Audit;
 
 namespace Domain.Users.Entities;
 
-public sealed class UserEntity : IModificationAuditableEntity, ISoftDeleteAuditableEntity
+public abstract class UserEntity : IModificationAuditableEntity, ISoftDeleteAuditableEntity
 {
     public long Id { get; set; }
 

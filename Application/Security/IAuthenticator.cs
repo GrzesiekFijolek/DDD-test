@@ -4,5 +4,5 @@ namespace Application.Security;
 
 public interface IAuthenticator
 {
-    TokenResponse CreateToken(long userId, string userName, string role);
+    TokenResponse CreateToken(long userId, string userName, string type);
 }
