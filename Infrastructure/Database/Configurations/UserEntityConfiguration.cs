@@ -10,6 +10,9 @@ internal sealed class UserEntityConfiguration : IEntityTypeConfiguration<UserEnt
     {
         builder.HasKey(u => u.Id);
 
+        builder.HasIndex(x => x.Email);
+        builder.HasIndex(x => x.UserName);
+        
         builder.Property(u => u.Email).IsRequired();
         builder.Property(u => u.UserName).IsRequired();
 

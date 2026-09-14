@@ -14,4 +14,7 @@ public sealed class DatabaseOptions
 
     [Required, MinLength(1)]
     public string MigrationsHistorySchema { get; init; } = "config";
+
+    [Required, MinLength(1)]
+    public string DefaultSchema { get; init; } = "app";
 }
