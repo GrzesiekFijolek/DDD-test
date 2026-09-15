@@ -1,4 +1,5 @@
 using Domain.Common.Exceptions;
+using FluentValidation;
 using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -20,25 +21,31 @@ internal sealed class ExceptionMiddleware : IMiddleware
         {
             await next(context);
         }
+        catch (ValidationException v)
+        {
+            var errors = GroupFailures(v);
+            _logger.LogWarning("Validation failed: {ExceptionName}. Errors: {@ValidationErrors}",
+                GetExceptionName(v), errors);
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new ValidationError("validation", errors));
+        }
+        catch (CustomException e)
+        {
+            _logger.LogError("An exception has occured: {ExceptionName}: {ExceptionMessage}",
+                GetExceptionName(e), e.Message);
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsJsonAsync(new Error(GetExceptionName(e), e.Message));
+        }
         catch (Exception e)
         {
-            await HandleException(e, context);
-            
-            _logger.LogWarning("An exception has occured: {ExceptionName}: {ExceptionMessage}", GetExceptionName(e), e.Message);
+            _logger.LogError("An unhandled exception has occured: {ExceptionName}: {ExceptionMessage}",
+                GetExceptionName(e), e.Message);
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsJsonAsync(new Error("error", "There was an error"));
         }
-    }
-
-    private static async Task HandleException(Exception exception, HttpContext context)
-    {
-        var (statusCode, error) = exception switch
-        {
-            CustomException => (StatusCodes.Status400BadRequest, new Error(GetExceptionName(exception), exception.Message)),
-            _ => (StatusCodes.Status500InternalServerError, new Error("error", "There was an error"))
-        };
-
-        context.Response.StatusCode = statusCode;
-
-        await context.Response.WriteAsJsonAsync(error);
     }
 
     private static string GetExceptionName(Exception exception)
@@ -49,5 +56,12 @@ internal sealed class ExceptionMiddleware : IMiddleware
         return exceptionName;
     }
 
+    private static Dictionary<string, string[]> GroupFailures(ValidationException exception) =>
+        exception.Errors
+            .GroupBy(e => e.PropertyName)
+            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
     private record Error(string code, string reason);
+
+    private record ValidationError(string code, IReadOnlyDictionary<string, string[]> errors);
 }

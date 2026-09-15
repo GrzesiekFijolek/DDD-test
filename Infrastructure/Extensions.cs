@@ -44,8 +44,9 @@ public static class Extensions
         services.AddSecurity();
         services.AddTime();
         services.AddExceptions();
+        services.AddValidation();
         services.AddCommandLogging();
-
+        
         return services;
     }
 
