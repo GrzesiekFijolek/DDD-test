@@ -1,3 +1,4 @@
+using Application.Common.Errors;
 using Domain.Common.Exceptions;
 using FluentValidation;
 using Humanizer;
@@ -28,15 +29,15 @@ internal sealed class ExceptionMiddleware : IMiddleware
                 GetExceptionName(v), errors);
 
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsJsonAsync(new ValidationError("validation", errors));
+            await context.Response.WriteAsJsonAsync(new ValidationErrorResponse("validation", errors));
         }
         catch (CustomException e)
         {
             _logger.LogError("An exception has occured: {ExceptionName}: {ExceptionMessage}",
                 GetExceptionName(e), e.Message);
 
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsJsonAsync(new Error(GetExceptionName(e), e.Message));
+            context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+            await context.Response.WriteAsJsonAsync(new ErrorResponse(GetExceptionName(e), e.Message));
         }
         catch (Exception e)
         {
@@ -44,7 +45,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
                 GetExceptionName(e), e.Message);
 
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            await context.Response.WriteAsJsonAsync(new Error("error", "There was an error"));
+            await context.Response.WriteAsJsonAsync(new ErrorResponse("error", "There was an error"));
         }
     }
 
@@ -61,7 +62,4 @@ internal sealed class ExceptionMiddleware : IMiddleware
             .GroupBy(e => e.PropertyName)
             .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 
-    private record Error(string code, string reason);
-
-    private record ValidationError(string code, IReadOnlyDictionary<string, string[]> errors);
 }
