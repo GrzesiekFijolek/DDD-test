@@ -1,8 +1,12 @@
+using Domain.Common.Consts;
+using Domain.Common.ValueObjects;
+using Domain.Users.Consts;
 using Domain.Users.Entities;
+using Domain.Users.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Database.Configurations;
+namespace Infrastructure.Users.Configurations;
 
 internal sealed class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
 {
@@ -13,8 +17,19 @@ internal sealed class UserEntityConfiguration : IEntityTypeConfiguration<UserEnt
         builder.HasIndex(x => x.Email);
         builder.HasIndex(x => x.UserName);
         
-        builder.Property(u => u.Email).IsRequired();
-        builder.Property(u => u.UserName).IsRequired();
+        builder.Property(u => u.Email)
+            .HasConversion(c => c.Value, c => new Email(c))
+            .IsRequired()
+            .HasMaxLength(CommonConsts.Email_MaxLength);
+        
+        builder.Property(u => u.UserName)
+            .HasConversion(c => c.Value, c => new UserName(c))
+            .IsRequired()
+            .HasMaxLength(UserConsts.UserName_MaxLength);
+
+        builder.Property(e => e.Password)
+            .HasConversion(c => c.Value, c => new UserPassword(c))
+            .IsRequired();
 
         builder
             .HasDiscriminator<string>("Type")

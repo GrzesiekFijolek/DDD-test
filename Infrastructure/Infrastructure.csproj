@@ -23,6 +23,11 @@
       <PackageReference Include="Serilog.Sinks.Seq" Version="9.1.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Account\" />
+      <Folder Include="Users\" />
+    </ItemGroup>
+
 
 </Project>
     
