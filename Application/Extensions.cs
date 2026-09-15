@@ -18,7 +18,9 @@ public static class Extensions
             .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<,>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-        
+
+        services.AddScoped<ISender, Sender>();
+
         return services;
     }
 }

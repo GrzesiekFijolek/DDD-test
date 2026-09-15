@@ -41,12 +41,13 @@ public static class Extensions
 
         services.AddDatabase(configuration);
         services.AddAuth(configuration);
+        services.AddAuthorization();
         services.AddSecurity();
         services.AddTime();
         services.AddExceptions();
         services.AddValidation();
         services.AddCommandLogging();
-        
+
         return services;
     }
 
@@ -55,8 +56,7 @@ public static class Extensions
         application.UseDatabase();
         application.UseMiddleware<ExceptionMiddleware>();
         application.UseAuthentication();
-
-        // application.MapControllers();
+        application.UseAuthorization();
 
         return application;
     }

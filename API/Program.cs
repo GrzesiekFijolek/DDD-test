@@ -1,3 +1,4 @@
+using API;
 using Application;
 using Domain;
 using Infrastructure;
@@ -17,6 +18,8 @@ builder.UseSerilogLogging();
 var app = builder.Build();
 
 app.UseInfrastructure();
+
+app.MapEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
