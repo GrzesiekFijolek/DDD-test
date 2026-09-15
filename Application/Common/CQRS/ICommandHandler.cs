@@ -7,5 +7,5 @@ public interface ICommandHandler<in TCommand> where TCommand: ICommand
 
 public interface ICommandHandler<in TCommand, TResponse> where TCommand : ICommand<TResponse> where TResponse : class
 {
-    Task<TResponse> HandleAsync(ICommand<TResponse> command);
+    Task<TResponse> HandleAsync(TCommand command);
 }

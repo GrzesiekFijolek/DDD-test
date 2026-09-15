@@ -44,7 +44,7 @@ internal sealed class LoggingComandHandlerDecorator<TCommand, TResponse> : IComm
         _logger = logger;
     }
 
-    public async Task<TResponse> HandleAsync(ICommand<TResponse> command)
+    public async Task<TResponse> HandleAsync(TCommand command)
     {
         var commandName = typeof(TCommand).Name.Underscore();
         var stopwatch = new Stopwatch();

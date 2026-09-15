@@ -31,7 +31,7 @@ internal sealed class UnitOfWorkCommandHandlerDecorator<TCommand, TResponse> : I
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<TResponse> HandleAsync(ICommand<TResponse> command)
+    public async Task<TResponse> HandleAsync(TCommand command)
     {
         return await _unitOfWork.ExecuteAsync(() => _commandHandler.HandleAsync(command));
     }
